@@ -19,17 +19,21 @@ const userSchema = new mongoose.Schema({
         type : String, 
         required : true
     },
-    friends : {
+    friends : [{
         type : mongoose.Schema.Types.ObjectId,  
         ref : 'User'
-    }, 
-    pendingSentInvitations : {
+    }], 
+    pendingSentInvitations : [{
         type : mongoose.Schema.Types.ObjectId, 
         ref : 'User'
-    }, 
-    pendingReceiverInvitations : {
+    }], 
+    pendingReceiverInvitations : [{
         type : mongoose.Schema.Types.ObjectId, 
         ref : 'User'
-    }
+    }],
 
 }, {timestamps : true})
+
+const User = mongoose.model('User', userSchema);
+
+export default User
