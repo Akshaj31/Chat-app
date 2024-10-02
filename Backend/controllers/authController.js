@@ -4,43 +4,46 @@ import bcrypt from 'bcryptjs';
 import generateUniqueUsername from '../utils/usernameGenerator.js';
 
 
-const registerUser = async(req, res) =>{
-    const {name, email, username, password} = req.body;
-    if (!name || !email || !username || !password) {
+const registerUser = async (req, res) => {
+    const { name, email, password} = req.body; 
+
+    if (!name || !email || !password) {
         return res.status(400).json({ message: 'All fields are required.' });
     }
     
-    const userExists = await User.findOne({email});
+    const userExists = await User.findOne({ email });
 
-    if(userExists){
+    if (userExists) {
         res.status(400);
-        throw new Error("User with this email id already exists")
+        throw new Error("User with this email id already exists");
     }
 
+    // Hash the password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt)
-
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const username = await generateUniqueUsername();
+    // Create the user with the generated username
     const user = await User.create({
         name,
         email,
-        username, 
-        password : hashedPassword
-    })
+        username,
+        password: hashedPassword,
+    });
 
-    if(user){
+    // Check if the user was created successfully
+    if (user) {
         res.status(201).json({
-            _id : user._id, 
-            name : user.name, 
-            email : user.email, 
-            username : user.username, 
+            _id: user._id, 
+            name: user.name, 
+            email: user.email, 
+            username: user.username, 
             // Include token here in future
-        })
+        });
+    } else {
+        res.status(400);
+        throw new Error('Invalid user data');
     }
-    else{
-        res.status(400)
-        throw new Error('Invalid user data')
-    }
-}
+};
 
 
 const loginUser = async (req, res) => {
@@ -93,6 +96,7 @@ const getUsername = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 
 export {registerUser, loginUser, getUsername}

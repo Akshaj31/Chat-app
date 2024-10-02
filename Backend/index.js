@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectDB from "./controllers/connectDB.js";
 import cors from "cors";
 import generateUsername from "./utils/usernameGenerator.js";
+import userRoutes from './routes/userRoutes.js'
 
 dotenv.config();
 
@@ -22,6 +23,8 @@ app.get("/api/v1/generateUsername", (req, res) =>{
     const username = generateUsername();
     res.send(username);
 });
+
+app.use("/api/v2/users", userRoutes)
 
 app.use("/api/v1/users", authRoutes);
 
