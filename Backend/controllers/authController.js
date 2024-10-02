@@ -2,8 +2,11 @@ import User from '../models/User.Model.js';
 // import generateToken from '../utils/generateToken.js';
 import bcrypt from 'bcryptjs';
 
-const registerUser = async(res, req) =>{
+const registerUser = async(req, res) =>{
     const {name, email, username, password} = req.body;
+    if (!name || !email || !username || !password) {
+        return res.status(400).json({ message: 'All fields are required.' });
+    }
     
     const userExists = await User.findOne({email});
 
@@ -13,7 +16,7 @@ const registerUser = async(res, req) =>{
     }
 
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = bcrypt.hash(password)
+    const hashedPassword = await bcrypt.hash(password, salt)
 
     const user = await User.create({
         name,
