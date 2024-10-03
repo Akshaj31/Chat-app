@@ -11,5 +11,5 @@ router.post('/username', updateUsername);
 
 // Route for updating password
 router.post('/password', updatePassword);
-
+    ``
 export default router;

@@ -45,9 +45,12 @@ const updateUsername = async (req, res) => {
 
 // Update password
 const updatePassword = async (req, res) => {
-    const { previousUsername, oldPassword, newPassword } = req.body;
+    // can input either username or email as the input
+    const {input, oldPassword, newPassword } = req.body;
 
-    const user = await User.findOne({ username: previousUsername });
+    const user = await User.findOne({ 
+        $or: [{ email: input }, { username: input }]
+    });
     if (!user) {
         return res.status(404).json({ message: 'User not found.' });
     }
