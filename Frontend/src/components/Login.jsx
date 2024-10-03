@@ -13,12 +13,12 @@ const Login = () => {
 
     try {
       // Send a POST request to the login API
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch("http://localhost:3000/api/v1/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json", // Specify that you're sending JSON
         },
-        body: JSON.stringify({ username, password }), // Send the username and password as the request body
+        body: JSON.stringify({ "input":username, password }), // Send the username and password as the request body
       });
 
       // Parse the response
