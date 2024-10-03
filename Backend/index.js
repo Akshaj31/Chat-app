@@ -5,6 +5,7 @@ import connectDB from "./controllers/connectDB.js";
 import cors from "cors";
 import generateUsername from "./utils/usernameGenerator.js";
 import userRoutes from './routes/userRoutes.js'
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -12,6 +13,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 
 connectDB();
 
