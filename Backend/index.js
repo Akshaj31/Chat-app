@@ -6,6 +6,7 @@ import cors from "cors";
 import generateUsername from "./utils/usernameGenerator.js";
 import userRoutes from './routes/userRoutes.js'
 import cookieParser from "cookie-parser";
+import messageRoutes from './routes/messageRoutes.js'
 
 dotenv.config();
 
@@ -27,6 +28,8 @@ app.get("/api/v1/generateUsername", (req, res) =>{
 });
 
 app.use("/api/v2/users", userRoutes)
+
+app.use("/api/v1/messages", messageRoutes)
 
 app.use("/api/v1/users", authRoutes);
 

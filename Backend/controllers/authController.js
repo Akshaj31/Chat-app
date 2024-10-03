@@ -51,6 +51,10 @@ const registerUser = async (req, res) => {
             maxAge: 24 * 60 * 60 * 1000, // 1 day
         });
 
+        req.user = user; // Setting req.user to the logged-in user
+
+        console.log(req.user)
+
         return res.status(201).json({
             _id: user._id,
             name: user.name,
@@ -102,6 +106,10 @@ const loginUser = async (req, res) => {
             sameSite: 'Strict', // or 'Lax' depending on your needs
             maxAge: 24 * 60 * 60 * 1000, // 1 day
         });
+
+        req.user = user;
+
+        console.log(req.user)
 
         return res.status(200).json({
             _id: user._id,

@@ -1,5 +1,5 @@
 import express from 'express';
-import { checkUsername, updateUsername, updatePassword } from '../controllers/userController.js';
+import { checkUsername, updateUsername, updatePassword, getUserByUsername } from '../controllers/userController.js';
 
 const router = express.Router();
 
@@ -11,5 +11,6 @@ router.post('/username', updateUsername);
 
 // Route for updating password
 router.post('/password', updatePassword);
-    ``
+
+router.get('/:username', getUserByUsername);
 export default router;
