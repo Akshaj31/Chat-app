@@ -131,6 +131,7 @@ const logout = async (req, res) =>{
     const {userId} = req.body
     try{
         await User.updateOne({_id:userId}, {$set: {refreshToken:null}})
+        res.cookie('accessToken', '', { expires: new Date(0) }); // Expire access token cookie
         res.cookie('refreshToken', '', { expires: new Date(0) });
         return res.status(200).json({ message: "Logged out successfully." });
     }catch(error){
@@ -138,4 +139,4 @@ const logout = async (req, res) =>{
     }
 }
 
-export { registerUser, loginUser, getUsername };
+export { registerUser, loginUser, getUsername, logout };
