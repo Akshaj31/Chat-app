@@ -1,6 +1,7 @@
 import User from '../models/User.Model.js';
 import bcrypt from 'bcryptjs';
 import generateUniqueUsername from '../utils/usernameGenerator.js';
+import {generateAccessToken, generateRefreshToken} from '../utils/generateToken.js'
 
 const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
@@ -21,12 +22,33 @@ const registerUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
         const username = await generateUniqueUsername();
 
+        
         // Create the user with the generated username
         const user = await User.create({
             name,
             email,
             username,
             password: hashedPassword,
+        });
+        
+        const refreshToken = generateRefreshToken(user);
+        const accessToken = generateAccessToken(user);
+
+        user.refreshToken = refreshToken;
+        await user.save();
+
+        res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: true, // Set to true if using HTTPS
+            sameSite: 'Strict', // or 'Lax' depending on your needs
+            maxAge: 15 * 60 * 1000, // 15 minutes
+        });
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: true, // Set to true if using HTTPS
+            sameSite: 'Strict', // or 'Lax' depending on your needs
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
         });
 
         return res.status(201).json({
@@ -64,12 +86,30 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ message: "Password entered is incorrect" });
         }
 
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
+
+        res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: true, // Set to true if using HTTPS
+            sameSite: 'Strict', // or 'Lax' depending on your needs
+            maxAge: 15 * 60 * 1000, // 15 minutes
+        });
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: true, // Set to true if using HTTPS
+            sameSite: 'Strict', // or 'Lax' depending on your needs
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+        });
+
         return res.status(200).json({
             _id: user._id,
             name: user.name,
             email: user.email,
-            username: user.username
+            username: user.username,
             // Include token if needed
+            // accessToken,
         });
 
     } catch (error) {
@@ -85,5 +125,17 @@ const getUsername = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
+
+const logout = async (req, res) =>{
+    const {userId} = req.body
+    try{
+        await User.updateOne({_id:userId}, {$set: {refreshToken:null}})
+        res.cookie('refreshToken', '', { expires: new Date(0) });
+        return res.status(200).json({ message: "Logged out successfully." });
+    }catch(error){
+        return res.status(500).json({ message: error.message });
+    }
+}
 
 export { registerUser, loginUser, getUsername };
