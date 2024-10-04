@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const Login = () => {
   // State for username and password
@@ -6,6 +7,9 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); // State to handle errors
   const [success, setSuccess] = useState(false); // State for success
+
+  // Initialize navigate for redirection
+  const navigate = useNavigate();
 
   // Function to handle form submission
   const handleSubmit = async (e) => {
@@ -18,7 +22,7 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json", // Specify that you're sending JSON
         },
-        body: JSON.stringify({ "input":username, password }), // Send the username and password as the request body
+        body: JSON.stringify({ "input": username, password }), // Send the username and password as the request body
       });
 
       // Parse the response
@@ -28,8 +32,12 @@ const Login = () => {
         // Handle successful login (e.g., save token, redirect, etc.)
         console.log("Login successful!", data);
         setSuccess(true); // Set success to true if login succeeds
-        // Optionally, save a token or user info to localStorage
-        // localStorage.setItem("token", data.token);
+        
+        // Save the JWT token to localStorage
+        localStorage.setItem("token", data.token);
+
+        // Redirect to /messages route
+        navigate("/messages"); // Redirect to /messages
       } else {
         // Handle errors if login failed
         console.error("Login failed:", data.message);
